@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Pandrosou">
+<meta name="theme-color" content="#0f0f0e">
+<title>Pandrosou</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0f0f0e;--s:#1a1a18;--s2:#242422;--s3:#2e2e2b;--bd:#333330;--bd2:#3d3d39;--tx:#f0efe8;--tx2:#a8a89e;--tx3:#6b6b62;--gld:#c9a84c;--gd:#7a6228;--gb:rgba(201,168,76,.1);--gr:#4ade80;--grb:rgba(74,222,128,.1);--gbr:rgba(74,222,128,.25);--rd:#f87171;--rdb:rgba(248,113,113,.1);--rbr:rgba(248,113,113,.25);--bl:#60a5fa;--blb:rgba(96,165,250,.1);--blbr:rgba(96,165,250,.25);--am:#fbbf24;--amb:rgba(251,191,36,.1);--r:12px;--rl:18px;--sh:0 2px 12px rgba(0,0,0,.4);--fd:'DM Serif Display',Georgia,serif;--fb:'DM Sans','Helvetica Neue',sans-serif}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow:hidden;background:var(--bg)}
+body{font-family:var(--fb);color:var(--tx);font-size:16px}
+.shell{display:flex;flex-direction:column;height:100vh;height:100dvh}
+.topbar{background:var(--s);border-bottom:1px solid var(--bd);flex-shrink:0;z-index:20;display:flex;align-items:center;justify-content:space-between;padding:calc(env(safe-area-inset-top,12px) + 12px) 16px 12px}
+.tb-brand{font-family:var(--fd);font-size:20px;color:var(--gld)}
+.tb-sub{font-size:11px;color:var(--tx3);letter-spacing:.05em;text-transform:uppercase;margin-top:1px}
+.tb-pill{background:var(--s2);border:1px solid var(--bd);border-radius:20px;padding:5px 12px;font-size:12px;color:var(--tx2)}
+.tb-pill b{color:var(--gld)}
+.scroller{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:110px}
+.bnav{position:fixed;bottom:0;left:0;right:0;background:var(--s);border-top:1px solid var(--bd);display:flex;padding-bottom:env(safe-area-inset-bottom,0);z-index:20}
+.nb{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:10px 4px 8px;cursor:pointer;border:none;background:none;color:var(--tx3);font-family:var(--fb);font-size:10px;letter-spacing:.03em;text-transform:uppercase;-webkit-user-select:none}
+.ni{font-size:22px;line-height:1;display:block;transition:transform .15s}
+.nb.act{color:var(--gld)}
+.nb.act .ni{transform:scale(1.1)}
+.nsw{position:relative;flex:1;display:flex;justify-content:center;align-items:flex-end;padding-bottom:8px}
+.nsb{position:absolute;top:-22px;width:58px;height:58px;border-radius:50%;background:var(--gld);border:3px solid var(--bg);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:24px;box-shadow:0 4px 20px rgba(201,168,76,.4);-webkit-user-select:none;transition:transform .15s}
+.nsb:active{transform:scale(.95)}
+.nsl{font-size:10px;color:var(--tx3);text-transform:uppercase;letter-spacing:.03em}
+.page{display:none;padding:16px;animation:fu .2s ease}
+.page.act{display:block}
+@keyframes fu{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.sh{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.st{font-family:var(--fd);font-size:22px}
+.sm{font-size:12px;color:var(--tx3)}
+.card{background:var(--s);border:1px solid var(--bd);border-radius:var(--rl);padding:16px;margin-bottom:12px}
+.cl{font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:var(--tx3);font-weight:500;margin-bottom:12px}
+.trow{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:14px}
+.tc{padding:10px 6px;border-radius:var(--r);border:1px solid var(--bd2);background:var(--s2);text-align:center;cursor:pointer;font-size:13px;color:var(--tx2);transition:all .15s;-webkit-user-select:none}
+.tc.ai{background:var(--grb);color:var(--gr);border-color:var(--gbr)}
+.tc.ae{background:var(--rdb);color:var(--rd);border-color:var(--rbr)}
+.tc.at{background:var(--amb);color:var(--am);border-color:rgba(251,191,36,.3)}
+.field{margin-bottom:12px}
+.fl{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--tx3);font-weight:500;margin-bottom:6px;display:block}
+.field input,.field select,.field textarea{width:100%;padding:13px 14px;background:var(--s2);border:1px solid var(--bd2);border-radius:var(--r);color:var(--tx);font-family:var(--fb);font-size:16px;font-weight:300;-webkit-appearance:none;transition:border-color .15s,box-shadow .15s}
+.field input:focus,.field select:focus{outline:none;border-color:var(--gld);box-shadow:0 0 0 3px var(--gb)}
+.field input::placeholder{color:var(--tx3)}
+.field select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%236b6b62' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:36px}
+.rf{background:var(--s3)!important;color:var(--tx2)!important;font-weight:500!important}
+.fr{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.fr3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.aw{position:relative}
+.ap{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--tx3);font-size:16px;pointer-events:none}
+.aw input{padding-left:32px;font-size:20px;font-weight:300}
+.acl{position:absolute;top:calc(100% + 4px);left:0;right:0;background:var(--s2);border:1px solid var(--bd2);border-radius:var(--r);z-index:50;max-height:180px;overflow-y:auto;display:none;box-shadow:0 8px 24px rgba(0,0,0,.5)}
+.aci{padding:12px 14px;font-size:15px;color:var(--tx);border-bottom:1px solid var(--bd)}
+.aci:last-child{border-bottom:none}
+.aci:active,.aci.sel{background:var(--gb);color:var(--gld)}
+.btn{width:100%;padding:15px;border-radius:var(--r);border:none;font-family:var(--fb);font-size:16px;font-weight:500;cursor:pointer;transition:all .15s;-webkit-user-select:none}
+.btn:active{transform:scale(.98)}
+.bg{background:var(--gld);color:#0f0f0e}
+.bg:active{background:#b8962f}
+.bo{background:transparent;border:1px solid var(--bd2);color:var(--tx2)}
+.bsm{padding:8px 14px;font-size:13px;width:auto}
+.bd_{background:var(--rdb);color:var(--rd);border:1px solid var(--rbr);font-size:13px;padding:7px 12px;border-radius:8px;width:auto;cursor:pointer;font-family:var(--fb)}
+.notice{padding:12px 14px;border-radius:var(--r);margin-bottom:12px;display:flex;align-items:flex-start;gap:10px;font-size:14px}
+.nok{background:var(--grb);color:var(--gr);border:1px solid var(--gbr)}
+.nwarn{background:var(--amb);color:var(--am);border:1px solid rgba(251,191,36,.3)}
+.nerr{background:var(--rdb);color:var(--rd);border:1px solid var(--rbr)}
+.ninfo{background:var(--blb);color:var(--bl);border:1px solid var(--blbr)}
+.txi{background:var(--s);border:1px solid var(--bd);border-radius:var(--r);padding:13px 14px;margin-bottom:8px;display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+.tic{flex:1;min-width:0}
+.ticn{font-size:13px;color:var(--tx);font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tics{font-size:12px;color:var(--tx3);margin-top:2px}
+.tia{font-family:var(--fd);font-size:18px;text-align:right}
+.tia.p{color:var(--gr)}.tia.n{color:var(--rd)}
+.ttag{display:inline-block;font-size:10px;padding:2px 7px;border-radius:10px;font-weight:500;margin-top:4px;text-transform:uppercase;letter-spacing:.04em}
+.tgi{background:var(--grb);color:var(--gr)}.tge{background:var(--rdb);color:var(--rd)}.tgt{background:var(--amb);color:var(--am)}
+.sg{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+.sb_{background:var(--s);border:1px solid var(--bd);border-radius:var(--r);padding:14px}
+.sbl{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--tx3);margin-bottom:6px}
+.sbv{font-family:var(--fd);font-size:22px}
+.sbv.g{color:var(--gr)}.sbv.r{color:var(--rd)}.sbv.gold{color:var(--gld)}
+.drop{background:var(--s);border:2px dashed var(--bd2);border-radius:var(--rl);padding:32px 20px;text-align:center;margin-bottom:16px;transition:all .15s;cursor:pointer;position:relative;overflow:hidden}
+.drop.drag{border-color:var(--gld);background:var(--gb)}
+.di{font-size:48px;margin-bottom:10px;display:block}
+.dt{font-family:var(--fd);font-size:20px;margin-bottom:6px}
+.ds{font-size:13px;color:var(--tx3);line-height:1.5}
+#scan-file{position:absolute;inset:0;opacity:0;cursor:pointer;font-size:100px}
+#sprev{width:100%;border-radius:var(--r);border:1px solid var(--bd);display:none;margin-bottom:12px;max-height:220px;object-fit:cover}
+.sri{background:var(--s2);border:1px solid var(--bd);border-radius:var(--r);padding:12px 14px;margin-bottom:8px;display:flex;align-items:center;gap:12px}
+.src{width:22px;height:22px;border-radius:6px;border:1px solid var(--gld);background:var(--gb);display:flex;align-items:center;justify-content:center;font-size:13px;cursor:pointer;flex-shrink:0}
+.src.ck{background:var(--gld);color:#0f0f0e}
+.srm{font-size:14px;color:var(--tx)}
+.srs{font-size:12px;color:var(--tx3);margin-top:2px}
+.sra{font-family:var(--fd);font-size:17px;color:var(--gr);flex-shrink:0}
+.ldr{text-align:center;padding:32px;color:var(--tx2)}
+.sp{width:36px;height:36px;border:2px solid var(--bd);border-top-color:var(--gld);border-radius:50%;animation:spin 1s linear infinite;margin:0 auto 12px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.dot span{display:inline-block;animation:dot 1.2s infinite;font-size:20px;color:var(--gld)}
+.dot span:nth-child(2){animation-delay:.2s}.dot span:nth-child(3){animation-delay:.4s}
+@keyframes dot{0%,80%,100%{opacity:.2}40%{opacity:1}}
+.expb{background:var(--s);border:1px solid var(--bd);border-radius:var(--rl);padding:18px;margin-bottom:12px}
+.ebt{font-family:var(--fd);font-size:18px;margin-bottom:4px}
+.ebs{font-size:13px;color:var(--tx3);margin-bottom:14px}
+.ebc{display:inline-block;background:var(--s2);border:1px solid var(--bd);border-radius:8px;padding:2px 10px;font-size:13px;color:var(--tx2);margin-bottom:12px}
+.abox{background:var(--s);border:1px solid var(--gd);border-radius:var(--rl);padding:18px;margin-bottom:16px}
+.abt{font-family:var(--fd);font-size:18px;color:var(--gld);margin-bottom:6px}
+.abs{font-size:13px;color:var(--tx2);margin-bottom:12px;line-height:1.5}
+.dv{border:none;border-top:1px solid var(--bd);margin:14px 0}
+.mu{font-size:13px;color:var(--tx3)}
+@media(min-width:480px){.shell,.bnav{max-width:480px;margin:0 auto;left:50%;transform:translateX(-50%);position:relative}.bnav{position:fixed}}
+</style>
+</head>
+<body>
+<div class="shell">
+<div class="topbar">
+  <div><div class="tb-brand">Pandrosou</div><div class="tb-sub">Καταχώριση</div></div>
+  <div class="tb-pill"><b id="sbn">0</b> εγγραφές</div>
+</div>
+<div class="scroller" id="scr">
+
+<!-- TX PAGE -->
+<div class="page act" id="pg-tx">
+  <div class="sh"><div class="st">Συναλλαγή</div><div class="sm" id="tdd"></div></div>
+  <div id="txn" style="display:none"></div>
+  <div class="card">
+    <div class="trow">
+      <div class="tc ai" id="tci" onclick="sType('i')">↑ Έσοδο</div>
+      <div class="tc" id="tce" onclick="sType('e')">↓ Έξοδο</div>
+      <div class="tc" id="tct" onclick="sType('t')">⇄ Μεταφορά</div>
+    </div>
+    <div class="field">
+      <label class="fl">Καθαρή Αξία €</label>
+      <div class="aw"><span class="ap">€</span><input type="number" id="txnet" inputmode="decimal" placeholder="0.00" step="0.01" oninput="cVat()"/></div>
+    </div>
+    <div class="field"><label class="fl">Δραστηριότητα *</label>
+      <select id="txact">
+        <option value="">— Επιλογή —</option>
+        <option value="Κοσμηματοπωλείο - Κεντρικό">Κοσμηματοπωλείο · Κεντρικό</option>
+        <option value="Κοσμηματοπωλείο - Υποκατάστημα">Κοσμηματοπωλείο · Υποκατάστημα</option>
+        <option value="Τουριστικά Καταλύματα - 24K Athena Suites">24K Athena Suites</option>
+        <option value="Τουριστικά Καταλύματα - The Aeolian">The Aeolian</option>
+        <option value="Etsy / E-shop">Etsy / E-shop</option>
+        <option value="Λάμψα 7">Λάμψα 7</option>
+      </select>
+    </div>
+    <div class="field"><label class="fl">Κατηγορία *</label><select id="txcat"><option value="">— Επιλογή —</option></select></div>
+    <div class="field aw"><label class="fl">Προμηθευτής / Πελάτης</label>
+      <input type="text" id="txsup" placeholder="Πληκτρολογήστε..." autocomplete="off" oninput="doAc(this,'txsup',supp)"/>
+      <div class="acl" id="ac-txsup"></div>
+    </div>
+    <div class="fr">
+      <div class="field"><label class="fl">Λογαριασμός *</label>
+        <select id="txacc"><option value="">—</option>
+          <option>Ταμείο 22</option><option>Ταμείο 32</option><option>Alpha Bank</option>
+          <option>Eurobank</option><option>Πειραιώς 1</option><option>Πειραιώς 2</option>
+          <option>Revolut (κάρτα)</option><option>Αlpha Bank (Επιταγή ΜΤΧ)</option>
+          <option>Κάρτα Πειραιώς (φορέας)</option><option>Πίστωση</option>
+        </select>
+      </div>
+      <div class="field"><label class="fl">ΦΠΑ</label>
+        <select id="txvr" onchange="cVat()"><option value="0">0%</option><option value="0.13">13%</option><option value="0.24">24%</option></select>
+      </div>
+    </div>
+    <div class="field"><label class="fl">Περιγραφή</label><input type="text" id="txdesc" placeholder="Προαιρετικά..."/></div>
+    <div class="fr3">
+      <div class="field"><label class="fl">Ημερομηνία</label><input type="date" id="txde"/></div>
+      <div class="field"><label class="fl">ΦΠΑ €</label><input type="number" id="txva" readonly class="rf" placeholder="—"/></div>
+      <div class="field"><label class="fl">Σύνολο €</label><input type="number" id="txtot" readonly class="rf" placeholder="—"/></div>
+    </div>
+    <div class="mu" id="txvm" style="margin-bottom:10px;min-height:18px"></div>
+    <button class="btn bg" onclick="addTx()">+ Προσθήκη</button>
+  </div>
+  <div id="txlw" style="display:none">
+    <div class="sh" style="margin-top:4px">
+      <div style="font-size:14px;color:var(--tx2)">Συνεδρία</div>
+      <button class="bd_" onclick="clearAll()">Εκκαθάριση</button>
+    </div>
+    <div id="txl"></div>
+  </div>
+</div>
+
+<!-- SCAN PAGE -->
+<div class="page" id="pg-scan">
+  <div class="sh"><div class="st">Scan AI</div></div>
+  <div id="scn" style="display:none"></div>
+  <div class="abox" id="abox">
+    <div class="abt">🔑 Anthropic API Key</div>
+    <div class="abs">Για το AI scan χρειάζεστε API key από console.anthropic.com. Αποθηκεύεται μόνο στον browser.</div>
+    <div class="field"><input type="password" id="aki" placeholder="sk-ant-..."/></div>
+    <button class="btn bg" onclick="saveKey()" style="margin-top:4px">Αποθήκευση Key</button>
+  </div>
+  <div class="drop" id="sdrop">
+    <input type="file" id="scan-file" accept="image/*" capture="environment" onchange="doScan(this)"/>
+    <span class="di">📷</span>
+    <div class="dt">Φωτογραφήστε το χαρτί</div>
+    <div class="ds">Τιμολόγιο, απόδειξη ή χειρόγραφες πωλήσεις — το AI αναγνωρίζει αυτόματα τα ποσά</div>
+  </div>
+  <img id="sprev" alt="preview"/>
+  <div id="sldr" style="display:none"><div class="ldr"><div class="sp"></div><div>Ανάλυση εικόνας<br><span class="dot"><span>·</span><span>·</span><span>·</span></span></div></div></div>
+  <div id="sres" style="display:none">
+    <div class="sh"><div style="font-size:15px;color:var(--tx2)">Βρέθηκαν εγγραφές</div><button class="btn bg bsm" onclick="impSel()">Εισαγωγή ✓</button></div>
+    <div id="sitems"></div>
+    <div class="notice ninfo" style="margin-top:8px"><span>ℹ</span><div style="font-size:13px">Τσεκάρετε τις εγγραφές που θέλετε. Μπορείτε να τις επεξεργαστείτε μετά.</div></div>
+  </div>
+</div>
+
+<!-- STR PAGE -->
+<div class="page" id="pg-str">
+  <div class="sh"><div class="st">Κράτηση STR</div></div>
+  <div id="strn" style="display:none"></div>
+  <div class="card">
+    <div class="field"><label class="fl">Επισκέπτης *</label><input type="text" id="strname" placeholder="Ονοματεπώνυμο"/></div>
+    <div class="fr">
+      <div class="field"><label class="fl">Πλατφόρμα *</label>
+        <select id="strplat"><option value="">—</option><option>BOOKING</option><option>AIRBNB</option><option>EXPEDIA</option><option>DIRECT</option><option>AGODA</option></select>
+      </div>
+      <div class="field"><label class="fl">Κατάλυμα *</label>
+        <select id="strprop" onchange="updR()"><option value="">—</option><option value="24k">24K Suites</option><option value="AEOLIAN">Aeolian</option></select>
+      </div>
+    </div>
+    <div class="fr">
+      <div class="field"><label class="fl">Δωμάτιο *</label><select id="strroom"><option value="">—</option></select></div>
+      <div class="field"><label class="fl">Κωδ. Κράτησης</label><input type="text" id="strcode" placeholder="BK-..."/></div>
+    </div>
+    <div class="fr">
+      <div class="field"><label class="fl">Άφιξη *</label><input type="date" id="strci" onchange="cN()"/></div>
+      <div class="field"><label class="fl">Αναχώρηση *</label><input type="date" id="strco" onchange="cN()"/></div>
+    </div>
+    <div class="fr3">
+      <div class="field"><label class="fl">Νύχτες</label><input type="number" id="strn_" readonly class="rf"/></div>
+      <div class="field"><label class="fl">Διαμονή €</label><input type="number" id="strrev" step="0.01" inputmode="decimal" oninput="cST()"/></div>
+      <div class="field"><label class="fl">Τέλος €</label><input type="number" id="strfee" step="0.01" inputmode="decimal" oninput="cST()"/></div>
+    </div>
+    <div class="field"><label class="fl">Σύνολο €</label><input type="number" id="strtot" readonly class="rf"/></div>
+    <div class="fr">
+      <div class="field"><label class="fl">ΑΠΥ</label><input type="text" id="strapy" placeholder="ΑΠΥ ΝΟ..."/></div>
+      <div class="field"><label class="fl">Παρατηρήσεις</label><input type="text" id="strnotes" placeholder="Προαιρετικά..."/></div>
+    </div>
+    <div class="mu" id="strvm" style="margin-bottom:10px;min-height:18px"></div>
+    <button class="btn bg" onclick="addStr()">+ Προσθήκη Κράτησης</button>
+  </div>
+  <div id="strlw" style="display:none">
+    <div class="sh" style="margin-top:4px"><div style="font-size:14px;color:var(--tx2)">Κρατήσεις</div></div>
+    <div id="strl"></div>
+  </div>
+</div>
+
+<!-- EXPORT PAGE -->
+<div class="page" id="pg-exp">
+  <div class="sh"><div class="st">Εξαγωγή</div></div>
+  <div class="sg">
+    <div class="sb_"><div class="sbl">Συναλλαγές</div><div class="sbv gold" id="etx">0</div></div>
+    <div class="sb_"><div class="sbl">Κρατήσεις</div><div class="sbv gold" id="estr">0</div></div>
+    <div class="sb_"><div class="sbl">Έσοδα</div><div class="sbv g" id="einc">0 €</div></div>
+    <div class="sb_"><div class="sbl">Έξοδα</div><div class="sbv r" id="eexp">0 €</div></div>
+  </div>
+  <div class="notice ninfo"><span>ℹ</span><div style="font-size:13px">CSV με ερωτηματικό (;). Στο Excel: Δεδομένα → Κείμενο σε στήλες → Οριοθετημένο → Ερωτηματικό.</div></div>
+  <div class="expb">
+    <div class="ebt">Συναλλαγές</div><div class="ebs">Sheet: Καταγραφή Συναλλαγών</div>
+    <div class="ebc" id="ectx">0 εγγραφές</div>
+    <button class="btn bg" onclick="expTx()">↓ Λήψη CSV</button>
+  </div>
+  <div class="expb">
+    <div class="ebt">Κρατήσεις STR</div><div class="ebs">Sheet: Βραχυχρόνια Μίσθωση</div>
+    <div class="ebc" id="ecstr">0 εγγραφές</div>
+    <button class="btn bg" onclick="expStr()">↓ Λήψη CSV</button>
+  </div>
+  <div class="expb" style="background:var(--rdb);border-color:var(--rbr)">
+    <div class="ebt" style="color:var(--rd)">Εκκαθάριση</div>
+    <div class="ebs">Διαγραφή όλων των δεδομένων</div>
+    <button class="bd_" style="width:100%;padding:12px" onclick="clearAll()">Εκκαθάριση Συνεδρίας</button>
+  </div>
+</div>
+
+</div><!-- /scroller -->
+
+<!-- BOTTOM NAV -->
+<div class="bnav">
+  <button class="nb act" id="nbtx" onclick="sPage('tx')"><span class="ni">⊞</span>Συναλλαγή</button>
+  <button class="nb" id="nbstr" onclick="sPage('str')"><span class="ni">⌂</span>Κράτηση</button>
+  <div class="nsw">
+    <div class="nsb" onclick="sPage('scan')">📷</div>
+    <span class="nsl">Scan</span>
+  </div>
+  <button class="nb" id="nbexp" onclick="sPage('exp');updExp()"><span class="ni">↓</span>Εξαγωγή</button>
+  <button class="nb" id="nbscan" onclick="sPage('scan')"><span class="ni">⚙</span>API Key</button>
+</div>
+</div>
+
+<script>
+const supp=["Acs courrier","Allianz","AVIN (Κονκατ ΑΤΕ)","Caretta","Cosmote","Dimitrios Gold","Epsilonnet","Euronet","Fed-Ex","Formula Πυροσβεστική","Jewelsoft-Μίδας","Jumbo ΑΕΕ","Leroy Merlin","Lobby Management","MEGASYSTEMS","Noujaim Roberta","Othisis","Pallet Stores","Plaka Donika","Savati","Security Πανδρόσου","Skroutz","Tony Mara","Vodafone","You.gr","Α/Β Βασιλόπουλος","Αμανατίδης Παναγιώτης","Αναγνώστου Γιάννης","Αναγνώστου Ελευθέριος","Άρης Βελούδα","Αφοί Σβουρδάκου","Βαβάνης Αντώνιος","Βορίδης","Γάλλος Κωνσταντίνος","Γεροχρήστος","Δ.Ε.Η.","Δαμιανίδου Ελισάβετ","ΕΛΤΑ","Ζηκοστάθης Θωμάς","Καλλίνικος","Καραλής Κώστας","Καργανιώτη Στέλλα","Καψάσκης","Κεράτσας Δημήτρης","Κόλλιας","Λάμπρος Γιαννιώτης","Λιαπάκης Στέλιος","Μαραμένος Α.Ε.","Μαραμένος Κώστας","Μπάμπης αλυσίδες","Μυλωνάς Αλέκος","Νοητάκης","Ξανθάκης Γιάννης","Παντής Ο.Ε.","Πατέρας","Πατσιούρας Μιχάλης","Ρολάν","Σακελάριος Γιάννης","Σταθόπουλος Γιώργος","Στριλίγκας","Συρδάκλας Αλέκος","Ταραζής Χρήστος","Τέλη Κυκλοφορίας","Τζιβελέκας ΑΕ","Τσίπας","Χαρ. Κωνσταντίνου Ο.Ε."];
+const cats={i:["Πωλήσεις Κοσμημάτων","Πωλήσεις Etsy","Έσοδα Καταλυμάτων Booking.com","Έσοδα Καταλυμάτων Airbnb","Έσοδα Καταλυμάτων Expedia","Έσοδα Καταλυμάτων Direct","Έσοδα Καταλυμάτων Agoda","Αμοιβή Διαχείρισης Καταλυμάτων","Τραπεζικά Έσοδα","Κατάθεση από Φορεά"],e:["Αγορές Εμπορευμάτων","Πληρωμή Προμηθευτών","Γενικά Έξοδα","Έξοδα Συντήρησης Καταλυμάτων","Έξοδα Συντήρησης Καταστήματος","Μισθοδοσία","Πληρωμή ΕΦΚΑ","Πληρωμή Εφορίας","Πληρωμή ΔΕΚΟ","Ενοίκια","Διαφημίσεις","Πληρωμή Δανείου","Πληρωμή Επιταγής","Τραπεζικά Έξοδα","ΑΠΔ","Τέλη Κλιματικής Κρίσης"],t:["Εσωτερική Μεταφορά","Ανάληψη από Τράπεζα","Κατάθεση σε Τράπεζα","Μεταφορά σε Ανοιχτό Δάνειο","Αντιλογισμός"]};
+const rms={'24k':[11,12,21,22,31,32,41,51],'AEOLIAN':[1,2]};
+let txs=[],strs=[],ct='i',si=[];
+
+window.onload=()=>{
+  document.getElementById('txde').value=new Date().toISOString().split('T')[0];
+  document.getElementById('tdd').textContent=new Date().toLocaleDateString('el-GR',{day:'numeric',month:'short'});
+  sType('i');
+  const k=localStorage.getItem('ant_k');
+  if(k){document.getElementById('aki').value=k;document.getElementById('abox').style.display='none';}
+  try{const t=localStorage.getItem('ptxs'),s=localStorage.getItem('pstrs');if(t)txs=JSON.parse(t);if(s)strs=JSON.parse(s);rTx();rStr();uSb();}catch(e){}
+};
+
+function sv(){try{localStorage.setItem('ptxs',JSON.stringify(txs));localStorage.setItem('pstrs',JSON.stringify(strs));}catch(e){}}
+
+function sPage(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('act'));
+  document.querySelectorAll('.nb').forEach(n=>n.classList.remove('act'));
+  document.getElementById('pg-'+id).classList.add('act');
+  const nb=document.getElementById('nb'+id);if(nb)nb.classList.add('act');
+  document.getElementById('scr').scrollTop=0;
+}
+
+function sType(t){
+  ct=t;
+  ['i','e','t'].forEach(x=>document.getElementById('tc'+x).className='tc');
+  document.getElementById('tc'+t).className='tc a'+t;
+  const sel=document.getElementById('txcat');
+  sel.innerHTML='<option value="">— Επιλογή —</option>';
+  cats[t].forEach(c=>{const o=document.createElement('option');o.value=c;o.textContent=c;sel.appendChild(o);});
+}
+
+function doAc(inp,fid,list){
+  const v=inp.value.toLowerCase().trim(),el=document.getElementById('ac-'+fid);
+  if(!v){el.style.display='none';return;}
+  const f=list.filter(s=>s.toLowerCase().includes(v)).slice(0,8);
+  if(!f.length){el.style.display='none';return;}
+  el.innerHTML=f.map(s=>`<div class="aci" ontouchstart="selAc('${fid}','${s.replace(/'/g,"\\'")}');return false" onmousedown="selAc('${fid}','${s.replace(/'/g,"\\'")}');return false">${s}</div>`).join('');
+  el.style.display='block';
+}
+function selAc(fid,v){document.getElementById(fid).value=v;document.getElementById('ac-'+fid).style.display='none';}
+document.addEventListener('touchstart',e=>{if(!e.target.closest('.aw'))document.querySelectorAll('.acl').forEach(a=>a.style.display='none');},{passive:true});
+
+function cVat(){
+  const n=parseFloat(document.getElementById('txnet').value)||0;
+  const r=parseFloat(document.getElementById('txvr').value)||0;
+  const v=n*r;
+  document.getElementById('txva').value=v?v.toFixed(2):'';
+  document.getElementById('txtot').value=n?(n+v).toFixed(2):'';
+}
+
+function addTx(){
+  const net=parseFloat(document.getElementById('txnet').value);
+  const act=document.getElementById('txact').value;
+  const cat=document.getElementById('txcat').value;
+  const acc=document.getElementById('txacc').value;
+  const vm=document.getElementById('txvm');
+  if(!act||!cat||isNaN(net)||net<=0||!acc){vm.innerHTML='<span style="color:var(--rd)">⚠ Ποσό + δραστηριότητα + κατηγορία + λογαριασμός</span>';return;}
+  vm.innerHTML='';
+  const sg=ct==='i'?1:-1,vr=parseFloat(document.getElementById('txvr').value)||0;
+  const va=parseFloat(document.getElementById('txva').value)||0,tot=parseFloat(document.getElementById('txtot').value)||net;
+  txs.push({de:document.getElementById('txde').value,di:document.getElementById('txde').value,desc:document.getElementById('txdesc').value,act,cat,sup:document.getElementById('txsup').value,net:sg*net,vr,va:sg*va,tot:sg*tot,acc,type:ct});
+  sv();rTx();uSb();
+  ntf('txn','ok','✓ '+cat+' · '+net.toLocaleString('el-GR',{minimumFractionDigits:2})+' €');
+  ['txnet','txva','txtot','txdesc','txsup'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('txnet').focus();
+}
+
+function rTx(){
+  const el=document.getElementById('txl');
+  if(!txs.length){document.getElementById('txlw').style.display='none';return;}
+  document.getElementById('txlw').style.display='block';
+  el.innerHTML=txs.slice().reverse().map((t,ri)=>{
+    const i=txs.length-1-ri;
+    return`<div class="txi"><div class="tic"><div class="ticn">${t.cat}</div><div class="tics">${t.act.split(' - ').pop()}${t.sup?' · '+t.sup:''}</div><span class="ttag tg${t.type}">${t.type==='i'?'Έσοδο':t.type==='e'?'Έξοδο':'Μεταφορά'}</span></div><div><div class="tia ${t.net>0?'p':'n'}">${Math.abs(t.net).toLocaleString('el-GR',{minimumFractionDigits:2})}</div><div style="text-align:right;margin-top:6px"><button class="bd_" onclick="remTx(${i})">✕</button></div></div></div>`;
+  }).join('');
+}
+function remTx(i){txs.splice(i,1);sv();rTx();uSb();}
+
+function saveKey(){
+  const k=document.getElementById('aki').value.trim();
+  if(!k.startsWith('sk-ant-')){alert('Πρέπει να ξεκινά με sk-ant-');return;}
+  localStorage.setItem('ant_k',k);
+  document.getElementById('abox').style.display='none';
+  ntf('scn','ok','✓ API key αποθηκεύτηκε');
+}
+
+async function doScan(input){
+  const file=input.files[0];if(!file)return;
+  const apiKey=localStorage.getItem('ant_k');
+  if(!apiKey){document.getElementById('abox').style.display='block';ntf('scn','warn','⚠ Απαιτείται API key');return;}
+  const reader=new FileReader();
+  reader.onload=e=>{const p=document.getElementById('sprev');p.src=e.target.result;p.style.display='block';};
+  reader.readAsDataURL(file);
+  document.getElementById('sres').style.display='none';
+  document.getElementById('sldr').style.display='block';
+  try{
+    const b64=await new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result.split(',')[1]);r.onerror=rej;r.readAsDataURL(file);});
+    const mt=file.type||'image/jpeg';
+    const resp=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01'},
+      body:JSON.stringify({
+        model:'claude-opus-4-5',max_tokens:1000,
+        messages:[{role:'user',content:[
+          {type:'image',source:{type:'base64',media_type:mt,data:b64}},
+          {type:'text',text:`Ανάλυσε αυτή την εικόνα και εξάγαγε ΜΟΝΟ οικονομικές εγγραφές σε JSON χωρίς markdown:\n{"entries":[{"description":"σύντομη περιγραφή","amount":123.45,"type":"income ή expense","supplier":"ή null","category":"μια από: Πωλήσεις Κοσμημάτων, Αγορές Εμπορευμάτων, Πληρωμή Προμηθευτών, Γενικά Έξοδα, Έσοδα Καταλυμάτων Booking.com, Ενοίκια, Πληρωμή ΔΕΚΟ, Μισθοδοσία, Διαφημίσεις"}]}\nΑν δεν υπάρχουν: {"entries":[]}`}
+        ]}]
+      })
+    });
+    const data=await resp.json();
+    document.getElementById('sldr').style.display='none';
+    if(!resp.ok){ntf('scn','err','Σφάλμα API: '+(data.error?.message||resp.status));return;}
+    const txt=data.content.find(c=>c.type==='text')?.text||'';
+    let parsed;
+    try{parsed=JSON.parse(txt.replace(/```json|```/g,'').trim());}catch(e){ntf('scn','err','Αδυναμία ανάλυσης. Δοκιμάστε πάλι.');return;}
+    si=(parsed.entries||[]).map(it=>({...it,checked:true}));
+    if(!si.length){ntf('scn','warn','Δεν βρέθηκαν εγγραφές στην εικόνα.');return;}
+    rSI();
+    document.getElementById('sres').style.display='block';
+    ntf('scn','ok','✓ Βρέθηκαν '+si.length+' εγγραφές');
+  }catch(err){
+    document.getElementById('sldr').style.display='none';
+    ntf('scn','err','Σφάλμα σύνδεσης.');
+  }
+}
+
+function rSI(){
+  document.getElementById('sitems').innerHTML=si.map((it,i)=>`<div class="sri"><div class="src ${it.checked?'ck':''}" onclick="tgScan(${i})">${it.checked?'✓':''}</div><div style="flex:1;min-width:0"><div class="srm">${it.description||it.category}</div><div class="srs">${it.category}${it.supplier?' · '+it.supplier:''} · ${it.type==='income'?'Έσοδο':'Έξοδο'}</div></div><div class="sra">${(it.amount||0).toLocaleString('el-GR',{minimumFractionDigits:2})} €</div></div>`).join('');
+}
+function tgScan(i){si[i].checked=!si[i].checked;rSI();}
+
+function impSel(){
+  const sel=si.filter(it=>it.checked);
+  if(!sel.length){ntf('scn','warn','Δεν επιλέξατε εγγραφές.');return;}
+  const today=new Date().toISOString().split('T')[0];
+  sel.forEach(it=>{
+    const sg=it.type==='income'?1:-1;
+    txs.push({de:today,di:today,desc:it.description||'',act:'Κοσμηματοπωλείο - Κεντρικό',cat:it.category||'Γενικά Έξοδα',sup:it.supplier||'',net:sg*(it.amount||0),vr:0,va:0,tot:sg*(it.amount||0),acc:'Ταμείο 22',type:it.type==='income'?'i':'e'});
+  });
+  sv();rTx();uSb();
+  ntf('scn','ok','✓ Εισήχθησαν '+sel.length+' εγγραφές · Ελέγξτε στη Συναλλαγή');
+  document.getElementById('sres').style.display='none';si=[];
+  setTimeout(()=>sPage('tx'),1500);
+}
+
+function updR(){
+  const p=document.getElementById('strprop').value,sel=document.getElementById('strroom');
+  sel.innerHTML='<option value="">—</option>';
+  if(p&&rms[p])rms[p].forEach(r=>{const o=document.createElement('option');o.value=r;o.textContent=r;sel.appendChild(o);});
+}
+function cN(){
+  const ci=document.getElementById('strci').value,co=document.getElementById('strco').value;
+  if(ci&&co){const d=Math.round((new Date(co)-new Date(ci))/86400000);document.getElementById('strn_').value=d>0?d:'';}
+  cST();
+}
+function cST(){const r=parseFloat(document.getElementById('strrev').value)||0,f=parseFloat(document.getElementById('strfee').value)||0;document.getElementById('strtot').value=(r+f)||'';}
+
+function addStr(){
+  const name=document.getElementById('strname').value,plat=document.getElementById('strplat').value;
+  const prop=document.getElementById('strprop').value,room=document.getElementById('strroom').value;
+  const ci=document.getElementById('strci').value,co=document.getElementById('strco').value;
+  const rev=parseFloat(document.getElementById('strrev').value);
+  const vm=document.getElementById('strvm');
+  if(!name||!plat||!prop||!room||!ci||!co||isNaN(rev)){vm.innerHTML='<span style="color:var(--rd)">⚠ Συμπληρώστε τα υποχρεωτικά πεδία</span>';return;}
+  vm.innerHTML='';
+  const n=parseInt(document.getElementById('strn_').value)||0,fee=parseFloat(document.getElementById('strfee').value)||0;
+  strs.push({name,plat,code:document.getElementById('strcode').value,prop:prop==='24k'?'24k':'AEOLIAN',room:parseInt(room),ci,co,n,rev,fee,tot:rev+fee,notes:document.getElementById('strnotes').value,apy:document.getElementById('strapy').value});
+  sv();rStr();uSb();
+  ntf('strn','ok','✓ '+name+' · '+(rev+fee).toLocaleString('el-GR',{minimumFractionDigits:2})+' €');
+  ['strname','strcode','strci','strco','strn_','strrev','strfee','strtot','strnotes','strapy'].forEach(id=>document.getElementById(id).value='');
+  ['strplat','strprop'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('strroom').innerHTML='<option value="">—</option>';
+}
+
+function rStr(){
+  const el=document.getElementById('strl');
+  if(!strs.length){document.getElementById('strlw').style.display='none';return;}
+  document.getElementById('strlw').style.display='block';
+  el.innerHTML=strs.slice().reverse().map((b,ri)=>{
+    const i=strs.length-1-ri;
+    return`<div class="txi"><div class="tic"><div class="ticn">${b.name}</div><div class="tics">${b.plat} · ${b.prop} δωμ.${b.room} · ${b.n} νύχτες</div><span class="ttag tgi">${b.ci} → ${b.co}</span></div><div><div class="tia p">${b.tot.toLocaleString('el-GR',{minimumFractionDigits:2})}</div><div style="text-align:right;margin-top:6px"><button class="bd_" onclick="remStr(${i})">✕</button></div></div></div>`;
+  }).join('');
+}
+function remStr(i){strs.splice(i,1);sv();rStr();uSb();}
+
+function uSb(){document.getElementById('sbn').textContent=txs.length+strs.length;}
+
+function updExp(){
+  const inc=txs.filter(t=>t.type==='i').reduce((s,t)=>s+Math.abs(t.net),0);
+  const exp=txs.filter(t=>t.type==='e').reduce((s,t)=>s+Math.abs(t.net),0);
+  document.getElementById('etx').textContent=txs.length;
+  document.getElementById('estr').textContent=strs.length;
+  document.getElementById('einc').textContent=inc.toLocaleString('el-GR',{minimumFractionDigits:2})+' €';
+  document.getElementById('eexp').textContent=exp.toLocaleString('el-GR',{minimumFractionDigits:2})+' €';
+  document.getElementById('ectx').textContent=txs.length+' εγγραφές';
+  document.getElementById('ecstr').textContent=strs.length+' εγγραφές';
+}
+
+function toCSV(h,rows){const e=v=>{if(v===null||v===undefined)return'';const s=String(v);return s.includes(';')||s.includes('"')||s.includes('\n')?`"${s.replace(/"/g,'""')}"`  :s;};return[h,...rows].map(r=>r.map(e).join(';')).join('\n');}
+function dl(c,fn){const blob=new Blob(['\uFEFF'+c],{type:'text/csv;charset=utf-8;'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=fn;a.click();}
+function expTx(){if(!txs.length){alert('Δεν υπάρχουν συναλλαγές.');return;}const h=['Ημερομηνία καταχώρισης','Ημερομηνία τιμολογίου','Περιγραφή','Δραστηριότητα','Κατηγορία','Προμηθευτής/Πελάτης','Καθαρή Αξία','Συντελεστής ΦΠΑ','Ποσό ΦΠΑ','Συνολικό Ποσό','Κ24','Λογαριασμός'];const rows=txs.map(t=>[t.de,t.di,t.desc,t.act,t.cat,t.sup,t.net,t.vr||0,t.va||0,t.tot,'',t.acc]);dl(toCSV(h,rows),`συναλλαγες_${new Date().toISOString().split('T')[0]}.csv`);}
+function expStr(){if(!strs.length){alert('Δεν υπάρχουν κρατήσεις.');return;}const h=['ΟΝΟΜΑ','ΠΛΑΤΦΟΡΜΑ','ΚΩΔΙΚΟΣ ΚΡΑΤΗΣΗΣ','ΚΑΤΑΛΥΜΑ','ΔΩΜΑΤΙΟ','ΗΜΕΡΟΜΗΝΙΑ ΑΦΙΞΗΣ','ΗΜΕΡΟΜΗΝΙΑ ΑΝΑΧΩΡΗΣΗΣ','ΗΜΕΡΕΣ','ΔΙΑΜΟΝΗ','ΤΕΛΟΣ','ΣΥΝΟΛΟ','ΠΑΡΑΤΗΡΗΣΕΙΣ','ΑΠΥ'];const rows=strs.map(b=>[b.name,b.plat,b.code,b.prop,b.room,b.ci,b.co,b.n,b.rev,b.fee,b.tot,b.notes,b.apy]);dl(toCSV(h,rows),`kratiseis_${new Date().toISOString().split('T')[0]}.csv`);}
+function clearAll(){if(!confirm('Διαγραφή όλων;'))return;txs=[];strs=[];sv();rTx();rStr();uSb();}
+function ntf(id,type,msg){const el=document.getElementById(id);const m={ok:'nok',warn:'nwarn',err:'nerr',info:'ninfo'};el.className='notice '+m[type];el.innerHTML=`<span>${type==='ok'?'✓':'⚠'}</span><div>${msg}</div>`;el.style.display='flex';setTimeout(()=>el.style.display='none',3500);}
+</script>
+</body>
+</html>
